@@ -49,16 +49,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAddHomeworkDialog(Homework homeworkToEdit) {
-        AddHomeworkDialogFragment dialog = AddHomeworkDialogFragment.newInstance(homeworkToEdit);
+
+        NewHomeworkDialogFragment dialog = new NewHomeworkDialogFragment();
+        // Pasarle el objeto Homework al diálogo si se está editando
+        if (homeworkToEdit != null) {
+            Bundle args = new Bundle();
+            args.putParcelable("homework", homeworkToEdit);
+            dialog.setArguments(args);
+        }
         dialog.setOnHomeworkSavedListener(homework -> {
-            if (homeworkToEdit == null) {
-                homeworkList.add(homework);
-            } else {
-                homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
-            }
+                    if (homeworkToEdit == null) {
+                        homeworkList.add(homework);
+                    } else {
+                        homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
+                    }
             adapter.notifyDataSetChanged();
-        });
+                });
         dialog.show(getSupportFragmentManager(), "AddHomeworkDialog");
+//
+//        AddHomeworkDialogFragment dialog = AddHomeworkDialogFragment.newInstance(homeworkToEdit);
+//        dialog.setOnHomeworkSavedListener(homework -> {
+//            if (homeworkToEdit == null) {
+//                homeworkList.add(homework);
+//            } else {
+//                homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
+//            }
+//            adapter.notifyDataSetChanged();
+//        });
+//        dialog.show(getSupportFragmentManager(), "AddHomeworkDialog");
     }
 
     private void showBottomSheet(Homework homework) {

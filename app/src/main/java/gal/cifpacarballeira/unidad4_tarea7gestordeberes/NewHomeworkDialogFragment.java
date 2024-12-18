@@ -1,58 +1,56 @@
 package gal.cifpacarballeira.unidad4_tarea7gestordeberes;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
 import java.util.Calendar;
 
-public class AddHomeworkDialogFragment extends DialogFragment {
+public class NewHomeworkDialogFragment extends DialogFragment {
 
     private EditText descriptionEditText;
     private EditText dueDateEditText;
     private Spinner subjectSpinner;
-    private OnHomeworkSavedListener listener;
+    private NewHomeworkDialogFragment.OnHomeworkSavedListener listener;
     private Homework homeworkToEdit;
 
-    public static AddHomeworkDialogFragment newInstance(Homework homework) {
-        AddHomeworkDialogFragment fragment = new AddHomeworkDialogFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("homework", homework);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_add_homework, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // Construir el diálogo
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        // Inflar el layout del diálogo con el xml que hemos creado antes
+        LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
+        View view = layoutInflater.inflate(R.layout.dialog_add_homework, null);
 
         descriptionEditText = view.findViewById(R.id.descriptionEditText);
         dueDateEditText = view.findViewById(R.id.dueDateEditText);
         subjectSpinner = view.findViewById(R.id.subjectSpinner);
-        Button saveButton = view.findViewById(R.id.saveButton);
-        Button cancelButton = view.findViewById(R.id.cancelButton);
+
+        dueDateEditText.setOnClickListener(v -> showDatePickerDialog());
 
         if (getArguments() != null) {
             homeworkToEdit = getArguments().getParcelable("homework");
             if (homeworkToEdit != null) {
                 descriptionEditText.setText(homeworkToEdit.getDescription());
                 dueDateEditText.setText(homeworkToEdit.getDueDate());
-                // Configura el spinner según la asignatura actual (se asume un método auxiliar para esto).
+                // Configurar el spinner según la asignatura actual (se asume un método auxiliar para esto).
+                subjectSpinner.setSelection(getIndex(subjectSpinner, homeworkToEdit.getSubject()));
             }
         }
 
-        dueDateEditText.setOnClickListener(v -> showDatePickerDialog());
-
+        Button saveButton = view.findViewById(R.id.saveButton);
+        Button cancelButton = view.findViewById(R.id.cancelButton);
         saveButton.setOnClickListener(v -> {
             if (validateInputs()) {
                 Homework homework = new Homework(
@@ -69,8 +67,27 @@ public class AddHomeworkDialogFragment extends DialogFragment {
         });
 
         cancelButton.setOnClickListener(v -> dismiss());
+        builder.setView(view);
+        return builder.create();
 
-        return view;
+    }
+
+    private int getIndex(Spinner subjectSpinner, String subject) {
+        for (int i = 0; i < subjectSpinner.getCount(); i++) {
+            if (subjectSpinner.getItemAtPosition(i).toString().equalsIgnoreCase(subject)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+
+    public interface OnHomeworkSavedListener {
+        void onHomeworkSaved(Homework homework);
+    }
+
+    public void setOnHomeworkSavedListener(NewHomeworkDialogFragment.OnHomeworkSavedListener listener) {
+        this.listener = listener;
     }
 
     private void showDatePickerDialog() {
@@ -99,11 +116,4 @@ public class AddHomeworkDialogFragment extends DialogFragment {
         return true;
     }
 
-    public void setOnHomeworkSavedListener(OnHomeworkSavedListener listener) {
-        this.listener = listener;
-    }
-
-    public interface OnHomeworkSavedListener {
-        void onHomeworkSaved(Homework homework);
-    }
 }

@@ -45,11 +45,4 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp" />
 
-    <ImageView
-        android:id="@+id/statusImageView"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="end"
-        android:src="@android:drawable/checkbox_on_background" />
-
 </LinearLayout>
