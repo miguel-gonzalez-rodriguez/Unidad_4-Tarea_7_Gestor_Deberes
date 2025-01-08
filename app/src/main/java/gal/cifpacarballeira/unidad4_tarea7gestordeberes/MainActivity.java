@@ -36,15 +36,26 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
-
         homeworkList = new ArrayList<>();
-        adapter = new HomeworkAdapter(homeworkList, this::showBottomSheet);
 
+        // Crear y configurar el adaptador
+        adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
+
+        // Este código sería lo mismo que la anterior línea
+        // adapter = new HomeworkAdapter(homeworkList, this::showBottomSheet);
+        // ¿Por qué le paso ese segundo parámetro?
+        // Porque le estoy pasando la función que quiero que se lance al hacer click en un elemento
+        // Investiga sobre "operador de referencia de método en Java"
+
+
+        // Configuración del RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        // Configuración del botón flotante
         fab.setOnClickListener(v -> showAddHomeworkDialog(null));
     }
 
@@ -80,19 +91,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showBottomSheet(Homework homework) {
+        // Creación del diálogo
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+
+        // Inflar el layout del diálogo
         View view = getLayoutInflater().inflate(R.layout.bottom_sheet_homework_options, null);
 
+        // Asignar acciones a los botones
+
+        // Opción de editar
         view.findViewById(R.id.editOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             showAddHomeworkDialog(homework);
         });
 
+        // Opción de eliminar
         view.findViewById(R.id.deleteOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             showDeleteConfirmation(homework);
         });
 
+
+        // Opción de marcar como completada
         view.findViewById(R.id.completeOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             homework.setCompleted(true);
@@ -100,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Tarea marcada como completada", Toast.LENGTH_SHORT).show();
         });
 
+        // Mostrar el diálogo
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.show();
     }

@@ -36,6 +36,7 @@ public class HomeworkAdapter extends RecyclerView.Adapter<HomeworkAdapter.Homewo
         holder.statusTextView.setText(homework.isCompleted() ? "Completado" : "Pendiente");
 
         holder.itemView.setOnClickListener(v -> listener.onHomeworkClick(homework));
+
     }
 
     @Override

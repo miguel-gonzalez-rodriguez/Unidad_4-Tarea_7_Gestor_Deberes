@@ -51,7 +51,7 @@ public class Homework implements Parcelable {
         isCompleted = completed;
     }
 
-    // Parcelable implementation
+    // Implementación de Parcelable
     protected Homework(Parcel in) {
         subject = in.readString();
         description = in.readString();
