@@ -33,25 +33,32 @@ public class NewHomeworkDialogFragment extends DialogFragment {
         LayoutInflater layoutInflater = requireActivity().getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.dialog_add_homework, null);
 
+        // Instanciar las vistas que utilizamos en el layout del diálogo
         descriptionEditText = view.findViewById(R.id.descriptionEditText);
         dueDateEditText = view.findViewById(R.id.dueDateEditText);
         subjectSpinner = view.findViewById(R.id.subjectSpinner);
 
+        // Configurar el listener para la fecha de entrega
         dueDateEditText.setOnClickListener(v -> showDatePickerDialog());
 
+        // Si se está editando un deber, cargar los datos en los campos
         if (getArguments() != null) {
             homeworkToEdit = getArguments().getParcelable("homework");
             if (homeworkToEdit != null) {
                 descriptionEditText.setText(homeworkToEdit.getDescription());
                 dueDateEditText.setText(homeworkToEdit.getDueDate());
-                // Configurar el spinner según la asignatura actual (se asume un método auxiliar para esto).
+                // Configurar el spinner según la asignatura actual
                 subjectSpinner.setSelection(getIndex(subjectSpinner, homeworkToEdit.getSubject()));
             }
         }
 
+        // Instancias de los botones
         Button saveButton = view.findViewById(R.id.saveButton);
         Button cancelButton = view.findViewById(R.id.cancelButton);
+
+        // Configurar los listeners de los botones
         saveButton.setOnClickListener(v -> {
+            // Validar los campos mediante un método privado de la clase
             if (validateInputs()) {
                 Homework homework = new Homework(
                         subjectSpinner.getSelectedItem().toString(),
@@ -67,7 +74,11 @@ public class NewHomeworkDialogFragment extends DialogFragment {
         });
 
         cancelButton.setOnClickListener(v -> dismiss());
+
+        // Asocia el layout al diálogo
         builder.setView(view);
+
+        // Crea el diálogo y lo devuelve
         return builder.create();
 
     }
