@@ -1,4 +1,5 @@
 package gal.cifpacarballeira.unidad4_tarea7gestordeberes;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private HomeworkAdapter adapter;
     private List<Homework> homeworkList;
+    HomeworkDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,14 @@ public class MainActivity extends AppCompatActivity {
         // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
-        homeworkList = new ArrayList<>();
+
+        // Inicializar la base de datos
+        db = new HomeworkDatabase(this);
+        // Recuperar los datos de la base de datos
+
+        homeworkList = db.getAllHomework();
+
+        //homeworkList = new ArrayList<>();
 
         // Crear y configurar el adaptador
         adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
@@ -68,11 +77,18 @@ public class MainActivity extends AppCompatActivity {
             args.putParcelable("homework", homeworkToEdit);
             dialog.setArguments(args);
         }
+
         dialog.setOnHomeworkSavedListener(homework -> {
                     if (homeworkToEdit == null) {
+                        // Añade el deber al arraylist
                         homeworkList.add(homework);
+                        // Añade el deber a la base de datos
+                        db.addHomework(homework);
                     } else {
+                        // Actualiza el objeto deber con los nuevos datos
                         homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
+                        // Actualiza el deber en la base de datos
+                        db.updateHomework(homework);
                     }
             adapter.notifyDataSetChanged();
                 });
@@ -116,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         view.findViewById(R.id.completeOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             homework.setCompleted(true);
+            // Actualizar el estado en la base de datos
+            db.updateHomework(homework);
             adapter.notifyDataSetChanged();
             Toast.makeText(this, "Tarea marcada como completada", Toast.LENGTH_SHORT).show();
         });
@@ -131,9 +149,17 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("¿Estás seguro de que deseas eliminar este deber?")
                 .setPositiveButton("Eliminar", (dialog, which) -> {
                     homeworkList.remove(homework);
+                    // Eliminar el deber de la base de datos
+                    db.deleteHomework(homework);
                     adapter.notifyDataSetChanged();
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        db.close();
     }
 }

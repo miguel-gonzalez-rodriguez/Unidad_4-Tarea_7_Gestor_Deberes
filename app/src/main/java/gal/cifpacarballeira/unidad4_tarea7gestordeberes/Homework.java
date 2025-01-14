@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 public class Homework implements Parcelable {
 
+    private int id; // Identificador único del deber
     private String subject; // Asignatura (PMDM, AD, etc.)
     private String description; // Descripción del deber
     private String dueDate; // Fecha de entrega en formato dd/MM/yyyy
@@ -16,6 +17,17 @@ public class Homework implements Parcelable {
         this.description = description;
         this.dueDate = dueDate;
         this.isCompleted = isCompleted;
+    }
+
+    public Homework() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     // Getters y Setters
@@ -51,8 +63,13 @@ public class Homework implements Parcelable {
         isCompleted = completed;
     }
 
+    public void setCompleted(int completed) {
+        isCompleted = completed == 1 ? true : false;
+    }
+
     // Implementación de Parcelable
     protected Homework(Parcel in) {
+        id = in.readInt();
         subject = in.readString();
         description = in.readString();
         dueDate = in.readString();
@@ -78,10 +95,12 @@ public class Homework implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(subject);
         dest.writeString(description);
         dest.writeString(dueDate);
         dest.writeByte((byte) (isCompleted ? 1 : 0));
     }
+
 }
 
