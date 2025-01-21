@@ -3,20 +3,11 @@ package gal.cifpacarballeira.unidad4_tarea7gestordeberes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "tabla_deberes")
 public class Homework implements Parcelable {
 
-    @ColumnInfo(name = "asignatura")
     private String subject; // Asignatura (PMDM, AD, etc.)
-    @ColumnInfo(name = "descripcion")
     private String description; // Descripción del deber
-    @ColumnInfo(name = "fecha_entrega")
     private String dueDate; // Fecha de entrega en formato dd/MM/yyyy
-    @ColumnInfo(name = "completado")
     private boolean isCompleted; // Estado del deber
 
     public int getId() {
@@ -28,8 +19,6 @@ public class Homework implements Parcelable {
     }
 
     // Añadimos una propiedad para la clave primaria de la tabla
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
     private int id;
 
     // Constructor

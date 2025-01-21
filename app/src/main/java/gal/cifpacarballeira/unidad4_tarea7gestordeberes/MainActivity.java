@@ -43,21 +43,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        // Crear la instancia de la base de datos
-        BaseDeDatos baseDeDatos = Room.databaseBuilder(getApplicationContext(),
-                BaseDeDatos.class,
-                "mi_base_de_datos")
-                .build();
-
-        // Usar el DAO para acceder a la base de datos
-        HomeworkDao homeworkDao = baseDeDatos.homeworkDao();
-
-        // Usar los métodos de la interfaz a la base de datos
-        // Obtenemos todos los deberes
-        homeworkList = homeworkDao.getAll();
 
 
-        //homeworkList = new ArrayList<>();
+        homeworkList = new ArrayList<>();
 
         // Crear y configurar el adaptador
         adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
