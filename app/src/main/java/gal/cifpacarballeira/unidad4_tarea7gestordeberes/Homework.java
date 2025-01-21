@@ -3,12 +3,34 @@ package gal.cifpacarballeira.unidad4_tarea7gestordeberes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "tabla_deberes")
 public class Homework implements Parcelable {
 
+    @ColumnInfo(name = "asignatura")
     private String subject; // Asignatura (PMDM, AD, etc.)
+    @ColumnInfo(name = "descripcion")
     private String description; // Descripción del deber
+    @ColumnInfo(name = "fecha_entrega")
     private String dueDate; // Fecha de entrega en formato dd/MM/yyyy
+    @ColumnInfo(name = "completado")
     private boolean isCompleted; // Estado del deber
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Añadimos una propiedad para la clave primaria de la tabla
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    private int id;
 
     // Constructor
     public Homework(String subject, String description, String dueDate, boolean isCompleted) {
@@ -53,6 +75,9 @@ public class Homework implements Parcelable {
 
     // Implementación de Parcelable
     protected Homework(Parcel in) {
+        // Añadimos línea para el id
+        id = in.readInt();
+
         subject = in.readString();
         description = in.readString();
         dueDate = in.readString();
@@ -82,6 +107,9 @@ public class Homework implements Parcelable {
         dest.writeString(description);
         dest.writeString(dueDate);
         dest.writeByte((byte) (isCompleted ? 1 : 0));
+
+        // Añadimos línea para el id
+        dest.writeInt(id);
     }
 }
 

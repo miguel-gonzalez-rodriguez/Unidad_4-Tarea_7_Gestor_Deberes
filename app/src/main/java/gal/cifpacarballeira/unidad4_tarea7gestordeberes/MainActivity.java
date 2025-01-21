@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private HomeworkAdapter adapter;
     private List<Homework> homeworkList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,22 @@ public class MainActivity extends AppCompatActivity {
         // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
-        homeworkList = new ArrayList<>();
+
+        // Crear la instancia de la base de datos
+        BaseDeDatos baseDeDatos = Room.databaseBuilder(getApplicationContext(),
+                BaseDeDatos.class,
+                "mi_base_de_datos")
+                .build();
+
+        // Usar el DAO para acceder a la base de datos
+        HomeworkDao homeworkDao = baseDeDatos.homeworkDao();
+
+        // Usar los métodos de la interfaz a la base de datos
+        // Obtenemos todos los deberes
+        homeworkList = homeworkDao.getAll();
+
+
+        //homeworkList = new ArrayList<>();
 
         // Crear y configurar el adaptador
         adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
