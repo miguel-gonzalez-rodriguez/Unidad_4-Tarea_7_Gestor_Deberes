@@ -43,7 +43,10 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
 
         // Inicializar la base de datos
-        db = new HomeworkDatabase(this);
+        // db = new HomeworkDatabase(this);
+
+        // Al utilizar el patrón singleton, debemos inicializar la BD así
+        db = HomeworkDatabase.getInstance(this);
         // Recuperar los datos de la base de datos
 
         homeworkList = db.getAllHomework();

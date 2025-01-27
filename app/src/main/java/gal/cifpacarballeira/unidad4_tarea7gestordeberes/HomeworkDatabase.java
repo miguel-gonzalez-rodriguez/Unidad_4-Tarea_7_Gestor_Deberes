@@ -11,6 +11,10 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+* Clase modificada para adaptarla al patrón Singleton
+* */
+
 public class HomeworkDatabase extends SQLiteOpenHelper {
     // Información de la base de datos
     private static final String DATABASE_NAME = "homework_database";
@@ -24,8 +28,23 @@ public class HomeworkDatabase extends SQLiteOpenHelper {
     private static final String KEY_DUE_DATE = "due_date";
     private static final String KEY_ISCOMPLETED = "isCompleted";
 
-    public HomeworkDatabase(@Nullable Context context) {
+    // Instancia de la base de datos (singleton)
+    private static volatile HomeworkDatabase INSTANCE;
+
+
+    // Constructor privado para evitar instanciación externa
+    private HomeworkDatabase(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    // Método para crear la instancia u obtenerla si ya existe
+    // Es static porque lo llamamos desde la clase, no se necesita una instancia del objeto
+    // Es synchronized para que solo un hilo pueda acceder a la instancia a la vez
+    public static synchronized HomeworkDatabase getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new HomeworkDatabase(context.getApplicationContext());
+        }
+        return INSTANCE;
     }
 
 
