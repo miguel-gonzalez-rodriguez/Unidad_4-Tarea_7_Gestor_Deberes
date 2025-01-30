@@ -11,22 +11,22 @@ import androidx.core.view.WindowInsetsCompat;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private HomeworkAdapter adapter;
-    private List<Homework> homeworkList;
-
+    // Sustituimos el ArrayList por nuestro ViewModel
+    //private List<Homework> homeworkList;
+    private HomeworkListWorkModel homeworkList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,19 +43,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
 
+        // Inicializamos nuestro ViewModel
+        homeworkList = new ViewModelProvider(this).get(HomeworkListWorkModel.class);
 
-
-        homeworkList = new ArrayList<>();
+        // Esta línea sobra, la dejo para que al abrir la aplicación haya datos en la lista
+        homeworkList.llenarLista();
 
         // Crear y configurar el adaptador
-        adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
+        adapter = new HomeworkAdapter(homeworkList.getHomeworkList().getValue(), homework -> showBottomSheet(homework));
 
-        // Este código sería lo mismo que la anterior línea
-        // adapter = new HomeworkAdapter(homeworkList, this::showBottomSheet);
-        // ¿Por qué le paso ese segundo parámetro?
-        // Porque le estoy pasando la función que quiero que se lance al hacer click en un elemento
-        // Investiga sobre "operador de referencia de método en Java"
-
+        // Configurar el observador para la lista de tareas
+        homeworkList.getHomeworkList().observe(this, homeworkList -> {
+            adapter.notifyDataSetChanged();
+        });
 
         // Configuración del RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -76,24 +76,15 @@ public class MainActivity extends AppCompatActivity {
         }
         dialog.setOnHomeworkSavedListener(homework -> {
                     if (homeworkToEdit == null) {
-                        homeworkList.add(homework);
+                        //homeworkList.add(homework);
+                        homeworkList.addHomework(homework);
                     } else {
                         homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
                     }
-            adapter.notifyDataSetChanged();
+                    // no hace falta porque está observando la lista
+            //adapter.notifyDataSetChanged();
                 });
         dialog.show(getSupportFragmentManager(), "AddHomeworkDialog");
-//
-//        AddHomeworkDialogFragment dialog = AddHomeworkDialogFragment.newInstance(homeworkToEdit);
-//        dialog.setOnHomeworkSavedListener(homework -> {
-//            if (homeworkToEdit == null) {
-//                homeworkList.add(homework);
-//            } else {
-//                homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
-//            }
-//            adapter.notifyDataSetChanged();
-//        });
-//        dialog.show(getSupportFragmentManager(), "AddHomeworkDialog");
     }
 
     private void showBottomSheet(Homework homework) {
@@ -121,8 +112,10 @@ public class MainActivity extends AppCompatActivity {
         // Opción de marcar como completada
         view.findViewById(R.id.completeOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
-            homework.setCompleted(true);
-            adapter.notifyDataSetChanged();
+            homeworkList.setCompleted(homework);
+            //homework.setCompleted(true);
+            //No hace falta porque está observando la lista
+            //adapter.notifyDataSetChanged();
             Toast.makeText(this, "Tarea marcada como completada", Toast.LENGTH_SHORT).show();
         });
 
@@ -136,8 +129,10 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Confirmar eliminación")
                 .setMessage("¿Estás seguro de que deseas eliminar este deber?")
                 .setPositiveButton("Eliminar", (dialog, which) -> {
-                    homeworkList.remove(homework);
-                    adapter.notifyDataSetChanged();
+                    //homeworkList.remove(homework);
+                    homeworkList.removeHomework(homework);
+                    // No hace falta porque está observando la lista
+                    //adapter.notifyDataSetChanged();
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();

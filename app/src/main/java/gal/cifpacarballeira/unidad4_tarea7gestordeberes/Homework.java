@@ -4,7 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Homework implements Parcelable {
-
+    // Añadimos una propiedad para la clave primaria de la tabla
+    private int id;
     private String subject; // Asignatura (PMDM, AD, etc.)
     private String description; // Descripción del deber
     private String dueDate; // Fecha de entrega en formato dd/MM/yyyy
@@ -18,8 +19,7 @@ public class Homework implements Parcelable {
         this.id = id;
     }
 
-    // Añadimos una propiedad para la clave primaria de la tabla
-    private int id;
+
 
     // Constructor
     public Homework(String subject, String description, String dueDate, boolean isCompleted) {
